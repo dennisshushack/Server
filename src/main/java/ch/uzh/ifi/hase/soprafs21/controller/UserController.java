@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs21.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) {
+        // Checks if username & password given are not empty
+        if(userPostDTO.getUsername() == null || userPostDTO.getPassword()==null){
+            String baseErrorMessage = "You need to provide a username and password";
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,String.format(baseErrorMessage));
+        }
         // convert API user to internal representation
         User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
