@@ -70,6 +70,10 @@ public class UserService {
                 String baseErrorMessage = "The password is incorrect!";
                 throw new ResponseStatusException(HttpStatus.FORBIDDEN,String.format(baseErrorMessage));
             }else{
+                // Set's the user to online, if he logged in correctly
+                currentUser.setStatus(UserStatus.ONLINE);
+                userRepository.save(currentUser);
+                userRepository.flush();
                 return true;
             }
 
@@ -137,5 +141,17 @@ public class UserService {
         else if (userByName != null) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "name", "is"));
         }
+    }
+
+    /**
+     * This function is for logging out the User
+     */
+    public Boolean setUserOffline(String username){
+        // Get's the user by username
+        User logoutUser = userRepository.findByUsername(username);
+        logoutUser.setStatus(UserStatus.OFFLINE);
+        userRepository.save(logoutUser);
+        userRepository.flush();
+        return true;
     }
 }

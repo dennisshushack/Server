@@ -107,7 +107,13 @@ public class UserController {
      * This function is made for logging the User out
      * It sets the User.Status = Offline, when the user logs out
      */
-
-
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public String setUserOffline(@RequestBody UserPostDTO userPostDTO){
+        String username = userPostDTO.getUsername();
+        Boolean logout = userService.setUserOffline(username);
+        return String.valueOf(logout);
+    }
 
 }
