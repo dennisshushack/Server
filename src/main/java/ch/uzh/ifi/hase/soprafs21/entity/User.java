@@ -4,6 +4,9 @@ import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.sql.Timestamp;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 /**
  * Internal User Representation
@@ -37,8 +40,8 @@ public class User implements Serializable {
     @Column()
     private String birthday;
 
-    @Column()
-    private String creationdate;
+    @CreationTimestamp
+    private Timestamp creationdate;
 
     @Column(nullable = false)
     private String password;
@@ -51,11 +54,11 @@ public class User implements Serializable {
         this.birthday = birthday;
     }
 
-    public String getCreationdate() {
+    public Timestamp getCreationdate() {
         return creationdate;
     }
 
-    public void setCreationdate(String creationdate) {
+    public void setCreationdate(Timestamp creationdate) {
         this.creationdate = creationdate;
     }
 

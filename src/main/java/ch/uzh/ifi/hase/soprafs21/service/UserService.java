@@ -39,7 +39,8 @@ public class UserService {
 
     public User createUser(User newUser) {
         newUser.setToken(UUID.randomUUID().toString());
-        newUser.setStatus(UserStatus.OFFLINE);
+        // User is created an automatically logged in
+        newUser.setStatus(UserStatus.ONLINE);
 
         checkIfUserExists(newUser);
 
@@ -49,6 +50,69 @@ public class UserService {
 
         log.debug("Created Information for User: {}", newUser);
         return newUser;
+    }
+    /**
+     * Checks the login credentials, if they are correct or not -> Throws an error if incorrect
+     */
+    public boolean checkLoginCredentials(User user){
+        // First we need to check, if the user even exists in our Repository
+        if(userRepository.findByUsername(user.getUsername())==null){
+            String baseErrorMessage = "The user with this username does not exist";
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format(baseErrorMessage));
+        } else{
+            // Get's us the current User saved with this username
+            User currentUser = userRepository.findByUsername(user.getUsername());
+            // Get's his current password and the one we want to compare
+            String testPassword = user.getPassword();
+            String currentPassword = currentUser.getPassword();
+            // Checks now, if the password of the login, is the same, as the currentPassword
+            if(!currentPassword.equals(testPassword)){
+                String baseErrorMessage = "The password is incorrect!";
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN,String.format(baseErrorMessage));
+            }else{
+                return true;
+            }
+
+        }
+
+    }
+
+    /**
+     * This function get's the User by id
+     * It also checks, if the User exists with this id, otherwise throws an error
+     */
+    public User getUserbyID(long id){
+        User user =  userRepository.findById(id);
+        if (user == null){
+            String baseErrorMessage = "The user with this id does not exist";
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,String.format(baseErrorMessage));
+        }else{
+            return user;
+        }
+    }
+
+    /**
+     * This function updates the old User with the new Username or the new Birthday added
+     */
+    public User updateUser(User currentUser, User userInput){
+        // We check first, if the new username, if added is already taken
+        if (userInput.getUsername() != null) {
+            if (userRepository.findByUsername(userInput.getUsername()) != null) {
+                String baseErrorMessage = "The username is already taken";
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage));
+            }
+            // Else it updates the current User's username
+            else {
+                currentUser.setUsername(userInput.getUsername());
+            }
+        }
+        // Now we check to update the birthday
+        if(userInput.getBirthday()!=null){
+            currentUser.setBirthday(userInput.getBirthday());
+        }
+        userRepository.save(currentUser);
+        userRepository.flush();
+        return currentUser;
     }
 
     /**
@@ -65,13 +129,13 @@ public class UserService {
 
         String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
         if (userByUsername != null && userByName != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username and the name", "are"));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username and the name", "are"));
         }
         else if (userByUsername != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "username", "is"));
         }
         else if (userByName != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "name", "is"));
         }
     }
 }
