@@ -8,6 +8,8 @@ public class UserGetDTO {
     private String name;
     private String username;
     private UserStatus status;
+    private String creationdate;
+    private String birthday;
 
     public Long getId() {
         return id;
@@ -39,5 +41,21 @@ public class UserGetDTO {
 
     public void setStatus(UserStatus status) {
         this.status = status;
+    }
+
+    public String getCreationdate() {
+        return creationdate;
+    }
+
+    public void setCreationdate(String creationdate) {
+        this.creationdate = creationdate;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
     }
 }

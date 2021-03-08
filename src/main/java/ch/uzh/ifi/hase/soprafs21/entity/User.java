@@ -34,6 +34,39 @@ public class User implements Serializable {
     @Column(nullable = false)
     private UserStatus status;
 
+    @Column()
+    private String birthday;
+
+    @Column()
+    private String creationdate;
+
+    @Column(nullable = false)
+    private String password;
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getCreationdate() {
+        return creationdate;
+    }
+
+    public void setCreationdate(String creationdate) {
+        this.creationdate = creationdate;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public Long getId() {
         return id;
     }
