@@ -94,7 +94,7 @@ public class UserController {
      * This will specifically return true (in String) format if logged in correctly
      * Otherwise it will return false
      */
-    @PostMapping("/login")
+ /**   @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String checkLogin(@RequestBody UserPostDTO userPostDTO){
