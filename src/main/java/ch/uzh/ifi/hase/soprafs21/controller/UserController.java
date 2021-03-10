@@ -100,25 +100,26 @@ public class UserController {
      * This will specifically return true (in String) format if logged in correctly
      * Otherwise it will return false
      */
-    @PostMapping("/login")
+    @PutMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String checkLogin(@RequestBody UserPostDTO userPostDTO){
-        User testUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-        Boolean login = userService.checkLoginCredentials(testUser);
-        return String.valueOf(login);
+    public UserGetDTO checkLogin(@RequestBody UserPutDTO userPutDTO){
+        User userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        User user = userService.checkLoginCredentials(userInput);
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
     }
 
     /**
      * This function is made for logging the User out
      * It sets the User.Status = Offline, when the user logs out
      */
-    @PostMapping("/logout")
+    @PutMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String setUserOffline(@RequestBody UserPostDTO userPostDTO){
-        String username = userPostDTO.getUsername();
-        Boolean logout = userService.setUserOffline(username);
+    public String setUserOffline(@RequestBody UserPutDTO userPutDTO){
+        long id = userPutDTO.getId();
+        System.out.println(id);
+        Boolean logout = userService.setUserOffline(id);
         return String.valueOf(logout);
     }
 

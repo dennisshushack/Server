@@ -54,7 +54,7 @@ public class UserService {
     /**
      * Checks the login credentials, if they are correct or not -> Throws an error if incorrect
      */
-    public boolean checkLoginCredentials(User user){
+    public User checkLoginCredentials(User user){
         // First we need to check, if the user even exists in our Repository
         if(userRepository.findByUsername(user.getUsername())==null){
             String baseErrorMessage = "The user with this username does not exist";
@@ -74,7 +74,7 @@ public class UserService {
                 currentUser.setStatus(UserStatus.ONLINE);
                 userRepository.save(currentUser);
                 userRepository.flush();
-                return true;
+                return currentUser;
             }
 
         }
@@ -146,9 +146,9 @@ public class UserService {
     /**
      * This function is for logging out the User
      */
-    public Boolean setUserOffline(String username){
+    public Boolean setUserOffline(long id){
         // Get's the user by username
-        User logoutUser = userRepository.findByUsername(username);
+        User logoutUser = userRepository.findById(id);
         logoutUser.setStatus(UserStatus.OFFLINE);
         userRepository.save(logoutUser);
         userRepository.flush();
