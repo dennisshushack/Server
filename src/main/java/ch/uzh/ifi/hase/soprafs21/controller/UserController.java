@@ -98,7 +98,7 @@ public class UserController {
     /**
      * This function is specifically made for /login
      * This will specifically return true (in String) format if logged in correctly
-     * Otherwise it will return false
+     * Otherwise it will return false!
      */
     @PutMapping("/login")
     @ResponseStatus(HttpStatus.OK)
