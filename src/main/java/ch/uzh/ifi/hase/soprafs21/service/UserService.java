@@ -141,7 +141,7 @@ public class UserService {
         }
         else if (userByName != null) {
             baseErrorMessage = "The name provided is not unique. Therefore, the user could not be created!";
-            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage, "name", "is"));
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage));
         }
     }
 
