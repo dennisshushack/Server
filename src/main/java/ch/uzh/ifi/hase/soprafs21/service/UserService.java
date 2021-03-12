@@ -99,9 +99,11 @@ public class UserService {
      * This function updates the old User with the new Username or the new Birthday added
      */
     public User updateUser(User currentUser, User userInput){
-        // We check first, if the new username, if added is already taken
-        if (userInput.getUsername() != null) {
-            if (userRepository.findByUsername(userInput.getUsername()) != null) {
+        // We check first if a username input was made
+        if (userInput.getUsername() != null ) {
+            // Checks if the name is already taken by someone in the database
+            User databaseUser = userRepository.findByUsername(userInput.getUsername());
+            if (databaseUser!=null && databaseUser.getUsername()!=currentUser.getUsername()) {
                 String baseErrorMessage = "The username is already taken";
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage));
             }
@@ -109,6 +111,9 @@ public class UserService {
             else {
                 currentUser.setUsername(userInput.getUsername());
             }
+        }else {
+            String baseErrorMessage = "You cannot enter an empty username";
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage));
         }
         // Now we check to update the birthday
         if(userInput.getBirthday()!=null){
