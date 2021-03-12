@@ -99,23 +99,22 @@ public class UserService {
      * This function updates the old User with the new Username or the new Birthday added
      */
     public User updateUser(User currentUser, User userInput){
-        // We check first if a username input was made
-        if (userInput.getUsername() != null ) {
-            // Checks if the name is already taken by someone in the database
+        if(userInput.getUsername()==null){
+            String baseErrorMessage = "You cannot choose an empty Username!";
+            throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage));
+        }
+        // We check first, if the userInputs username is empty
+        if(userInput.getUsername()!=null){
+            // If it isn't empty, we need to check, if there is already a user with this username
+            // We need to also check, that the User didn't just set the same Username as he already had
             User databaseUser = userRepository.findByUsername(userInput.getUsername());
-            if (databaseUser!=null && databaseUser.getUsername()!=currentUser.getUsername()) {
-                String baseErrorMessage = "The username is already taken";
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage));
-            }
-            // Else it updates the current User's username
-            else {
+            if(databaseUser != null && currentUser.getUsername()!=databaseUser.getUsername()){
+                String baseErrorMessage = "You cannot choose this Username. It has already been taken!";
+                throw new ResponseStatusException(HttpStatus.CONFLICT, String.format(baseErrorMessage));
+            }else{
                 currentUser.setUsername(userInput.getUsername());
             }
-        }else {
-            String baseErrorMessage = "You cannot enter an empty username";
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage));
         }
-        // Now we check to update the birthday
         if(userInput.getBirthday()!=null){
             currentUser.setBirthday(userInput.getBirthday());
         }
