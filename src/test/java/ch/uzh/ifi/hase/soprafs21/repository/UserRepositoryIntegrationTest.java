@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -25,8 +28,10 @@ public class UserRepositoryIntegrationTest {
         User user = new User();
         user.setName("Firstname Lastname");
         user.setUsername("firstname@lastname");
+        user.setPassword("1234");
         user.setStatus(UserStatus.OFFLINE);
         user.setToken("1");
+
 
         entityManager.persist(user);
         entityManager.flush();
@@ -40,5 +45,18 @@ public class UserRepositoryIntegrationTest {
         assertEquals(found.getUsername(), user.getUsername());
         assertEquals(found.getToken(), user.getToken());
         assertEquals(found.getStatus(), user.getStatus());
+        assertEquals(found.getBirthday(), user.getBirthday());
+        assertEquals(found.getPassword(), user.getPassword());
+    }
+    @Test
+    public void whenInvalidName_Null() {
+        User user = userRepository.findByName("SomeName");
+        assertThat(user).isNull();
+    }
+    // Does test, if the User can be retrieved with a wrong id
+    @Test
+    public void whenInvalidID_Null() {
+        User user = userRepository.findById(20);
+        assertThat(user).isNull();
     }
 }

@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs21.controller;
 import ch.uzh.ifi.hase.soprafs21.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs21.entity.User;
 import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs21.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs21.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,8 +24,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -33,21 +33,28 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This is a WebMvcTest which allows to test the UserController i.e. GET/POST request without actually sending them over the network.
  * This tests if the UserController works.
  */
+
+// We want to specifically test the UserControllerClass
 @WebMvcTest(UserController.class)
 public class UserControllerTest {
 
+    // This allows us to call particular requests on specific paths
     @Autowired
     private MockMvc mockMvc;
 
+    // Dummy Mock Service-> No need to implement the persistence
     @MockBean
     private UserService userService;
 
+    // This test is for the get Request, to get all users. In this test, we only check if one user is created
+    // and the response is correct
     @Test
     public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
         // given
         User user = new User();
         user.setName("Firstname Lastname");
         user.setUsername("firstname@lastname");
+        user.setPassword("1234");
         user.setStatus(UserStatus.OFFLINE);
 
         List<User> allUsers = Collections.singletonList(user);
@@ -64,8 +71,12 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].name", is(user.getName())))
                 .andExpect(jsonPath("$[0].username", is(user.getUsername())))
                 .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
-    }
 
+    }
+    // This is a similar test to the first one, however it checks, with more than one user
+   
+
+    // This tests the post Request, when adding a new user
     @Test
     public void createUser_validInput_userCreated() throws Exception {
         // given
@@ -74,12 +85,16 @@ public class UserControllerTest {
         user.setName("Test User");
         user.setUsername("testUsername");
         user.setToken("1");
-        user.setStatus(UserStatus.ONLINE);
+        user.setPassword("123");
+        user.setStatus(UserStatus.OFFLINE);
 
+        // We test the creation of a User here
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setName("Test User");
         userPostDTO.setUsername("testUsername");
+        userPostDTO.setPassword("123");
 
+        // Arrange
         given(userService.createUser(Mockito.any())).willReturn(user);
 
         // when/then -> do the request + validate the result
@@ -87,14 +102,76 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userPostDTO));
 
-        // then
+        // then (Act)
         mockMvc.perform(postRequest)
+                // Assert expected outcomes
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
                 .andExpect(jsonPath("$.name", is(user.getName())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
+    /// Checks, if the login-functionality is working properly (Put Request)
+    @Test
+    public void loginUser_valid() throws Exception {
+        // given
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test User");
+        user.setUsername("testUsername");
+        user.setToken("1");
+        user.setStatus(UserStatus.ONLINE);
+
+        UserPutDTO userPutDTO = new UserPutDTO();
+        userPutDTO.setUsername("testUsername");
+        userPutDTO.setPassword("1234");
+
+        given(userService.checkLoginCredentials(Mockito.any())).willReturn(user);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder putRequest = put("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPutDTO));
+
+        // then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.name", is(user.getName())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+    }
+
+    @Test
+    public void updateUser_valid() throws Exception {
+        // given
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test User");
+        user.setUsername("testUsername");
+        user.setBirthday("12.02.2020");
+        user.setToken("1");
+        user.setStatus(UserStatus.ONLINE);
+
+        UserPutDTO userPutDTO = new UserPutDTO();
+        userPutDTO.setId(1L);
+        userPutDTO.setUsername("testUsername");
+        userPutDTO.setBirthday("12.02.2020");
+
+        given(userService.updateUser(Mockito.any(),Mockito.any())).willReturn(user);
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder putRequest = put("/users/1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPutDTO));
+
+        // then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent());
+
+    }
+
+
 
     /**
      * Helper Method to convert userPostDTO into a JSON string such that the input can be processed

@@ -88,12 +88,10 @@ public class UserController {
     @PutMapping("/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public UserGetDTO updateUser(@PathVariable("userId")long userId, @RequestBody UserPutDTO userPutDTO) {
+    public void updateUser(@PathVariable("userId")long userId, @RequestBody UserPutDTO userPutDTO) {
         User currentUser = userService.getUserbyID(userId);
         User inputUser = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-        User updatedUser = userService.updateUser(currentUser,inputUser);
-        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(updatedUser);
-
+        userService.updateUser(currentUser,inputUser);
     }
     /**
      * This function is specifically made for /login
