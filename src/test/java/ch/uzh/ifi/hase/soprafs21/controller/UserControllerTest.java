@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -74,7 +75,41 @@ public class UserControllerTest {
 
     }
     // This is a similar test to the first one, however it checks, with more than one user
-   
+    @Test
+    public void givenUsers_whenGetUsers_thenReturnJsonArray2() throws Exception {
+        // given
+        User firstuser = new User();
+        firstuser.setName("Dennis Shushack");
+        firstuser.setUsername("dennis@shushack");
+        firstuser.setPassword("1234");
+        firstuser.setStatus(UserStatus.OFFLINE);
+
+        User seconduser = new User();
+        seconduser.setName("Max Mustermann");
+        seconduser.setUsername("max@mustermann");
+        seconduser.setPassword("3424");
+        seconduser.setStatus(UserStatus.OFFLINE);
+
+        // Creates a list with the first and the second user
+        List<User> allUsers = Arrays.asList(firstuser,seconduser);
+
+        // this mocks the UserService -> we define above what the userService should return when getUsers() is called
+        given(userService.getUsers()).willReturn(allUsers);
+
+        // when
+        MockHttpServletRequestBuilder getRequest = get("/users").contentType(MediaType.APPLICATION_JSON);
+
+        // then
+        mockMvc.perform(getRequest).andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].name", is(firstuser.getName())))
+                .andExpect(jsonPath("$[0].username", is(firstuser.getUsername())))
+                .andExpect(jsonPath("$[0].status", is(firstuser.getStatus().toString())))
+                .andExpect(jsonPath("$[1].name", is(seconduser.getName())))
+                .andExpect(jsonPath("$[1].username", is(seconduser.getUsername())))
+                .andExpect(jsonPath("$[1].status", is(seconduser.getStatus().toString())));
+
+    }
 
     // This tests the post Request, when adding a new user
     @Test
@@ -142,6 +177,12 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
 
+    // This one checks if the logout is valid:
+
+
+
+
+
     @Test
     public void updateUser_valid() throws Exception {
         // given
@@ -171,6 +212,33 @@ public class UserControllerTest {
 
     }
 
+    // The function checks the get function getUserbyID ( @GetMapping("/users/{userId}"))
+    @Test
+    public void givenUsers_GetUser_byId_valid() throws Exception{
+        // given
+        User user = new User();
+        user.setId(1L);
+        user.setName("TestUser");
+        user.setUsername("testuser");
+        user.setBirthday("12.02.2020");
+        user.setToken("1");
+        user.setStatus(UserStatus.OFFLINE);
+
+        // this mocks the UserService -> we define above what the userService should return when getUserbyID() is called
+        given(userService.getUserbyID(user.getId())).willReturn(user);
+
+        // this mocks the UserService -> we define above what the userService should return when getUserbyID() is called
+        MockHttpServletRequestBuilder getRequest = get("/users/1").contentType(MediaType.APPLICATION_JSON);
+
+        // then
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(user.getName())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+
+
+    }
 
 
     /**
