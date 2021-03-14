@@ -114,11 +114,10 @@ public class UserController {
     @PutMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public String setUserOffline(@RequestBody UserPutDTO userPutDTO){
-        long id = userPutDTO.getId();
-        System.out.println(id);
-        Boolean logout = userService.setUserOffline(id);
-        return String.valueOf(logout);
+    public UserGetDTO setUserOffline(@RequestBody UserPutDTO userPutDTO){
+        User userInput = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
+        User user = userService.setUserOffline(userInput);
+        return DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
     }
 
 }

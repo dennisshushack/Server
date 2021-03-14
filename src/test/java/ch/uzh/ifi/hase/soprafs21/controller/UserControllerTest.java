@@ -48,7 +48,7 @@ public class UserControllerTest {
     private UserService userService;
 
     // This test is for the get Request, to get all users. In this test, we only check if one user is created
-    // and the response is correct
+    // and the response is correct @GetMapping("/users")
     @Test
     public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
         // given
@@ -74,7 +74,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
 
     }
-    // This is a similar test to the first one, however it checks, with more than one user
+    // This is a similar test to the first one, however it checks, with more than one user @GetMapping("/users")
     @Test
     public void givenUsers_whenGetUsers_thenReturnJsonArray2() throws Exception {
         // given
@@ -111,7 +111,7 @@ public class UserControllerTest {
 
     }
 
-    // This tests the post Request, when adding a new user
+    // This tests the post Request, when adding a new user @PostMapping("/users")
     @Test
     public void createUser_validInput_userCreated() throws Exception {
         // given
@@ -146,7 +146,7 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
-    /// Checks, if the login-functionality is working properly (Put Request)
+    /// Checks, if the login-functionality is working properly (Put Request)     @PutMapping("/login")
     @Test
     public void loginUser_valid() throws Exception {
         // given
@@ -177,13 +177,40 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
 
-    // This one checks if the logout is valid:
-
-
-
-
-
+    // This one checks if the logout is valid: @PutMapping("/logout")
     @Test
+    public void logoutUser_valid() throws Exception {
+        // given
+        User user = new User();
+        user.setId(1L);
+        user.setName("Test User");
+        user.setUsername("testUsername");
+        user.setToken("1");
+        user.setStatus(UserStatus.ONLINE);
+
+        UserPutDTO userPutDTO = new UserPutDTO();
+        userPutDTO.setUsername("testUsername");
+        userPutDTO.setPassword("123");
+        userPutDTO.setId(1L);
+
+        given(userService.setUserOffline(Mockito.any())).willReturn(user);
+
+        /// when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder putRequest = put("/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPutDTO));
+        // then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.name", is(user.getName())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+    }
+
+    // This test refers to the @PutMapping("/users/{userId}")
+
+        @Test
     public void updateUser_valid() throws Exception {
         // given
         User user = new User();

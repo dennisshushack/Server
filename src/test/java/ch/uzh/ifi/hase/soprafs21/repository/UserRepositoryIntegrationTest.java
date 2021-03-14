@@ -49,6 +49,33 @@ public class UserRepositoryIntegrationTest {
         assertEquals(found.getPassword(), user.getPassword());
     }
     @Test
+    public void finByUsername_success(){
+        User user = new User();
+        user.setName("Firstname Lastname");
+        user.setUsername("firstname@lastname");
+        user.setStatus(UserStatus.OFFLINE);
+        user.setToken("1");
+        user.setBirthday("20.02.1996");
+        user.setPassword("1234");
+
+        entityManager.persist(user);
+        entityManager.flush();
+
+        User found = userRepository.findByUsername(user.getUsername());
+
+        // then
+        assertNotNull(found.getId());
+        assertEquals(found.getId(), user.getId());
+        assertEquals(found.getName(), user.getName());
+        assertEquals(found.getUsername(), user.getUsername());
+        assertEquals(found.getToken(), user.getToken());
+        assertEquals(found.getStatus(), user.getStatus());
+        assertEquals(found.getBirthday(), user.getBirthday());
+        assertEquals(found.getPassword(), user.getPassword());
+
+
+    }
+    @Test
     public void whenInvalidName_Null() {
         User user = userRepository.findByName("SomeName");
         assertThat(user).isNull();

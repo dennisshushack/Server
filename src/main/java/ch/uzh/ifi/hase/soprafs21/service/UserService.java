@@ -152,12 +152,13 @@ public class UserService {
     /**
      * This function is for logging out the User
      */
-    public Boolean setUserOffline(long id){
-        // Get's the user by username
+    public User setUserOffline(User user){
+        // Get's the id of the user
+        long id = user.getId();
         User logoutUser = userRepository.findById(id);
         logoutUser.setStatus(UserStatus.OFFLINE);
         userRepository.save(logoutUser);
         userRepository.flush();
-        return true;
+        return logoutUser;
     }
 }
