@@ -47,8 +47,10 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    // This test is for the get Request, to get all users. In this test, we only check if one user is created
-    // and the response is correct @GetMapping("/users")
+    /*
+     * This test is for the get Request, to get all users. In this test, we only check if one user is created
+     * and the response is correct @GetMapping("/users")
+     */
     @Test
     public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
         // given
@@ -58,6 +60,7 @@ public class UserControllerTest {
         user.setPassword("1234");
         user.setStatus(UserStatus.OFFLINE);
 
+        // This is what we are expecting to be returned
         List<User> allUsers = Collections.singletonList(user);
 
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
@@ -66,7 +69,7 @@ public class UserControllerTest {
         // when
         MockHttpServletRequestBuilder getRequest = get("/users").contentType(MediaType.APPLICATION_JSON);
 
-        // then
+        // then we perform the action
         mockMvc.perform(getRequest).andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].name", is(user.getName())))
@@ -74,7 +77,9 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
 
     }
-    // This is a similar test to the first one, however it checks, with more than one user @GetMapping("/users")
+    /* This is a similar test to the first one, however it checks, with more than one user
+     * @GetMapping("/users")
+     */
     @Test
     public void givenUsers_whenGetUsers_thenReturnJsonArray2() throws Exception {
         // given
@@ -90,7 +95,7 @@ public class UserControllerTest {
         seconduser.setPassword("3424");
         seconduser.setStatus(UserStatus.OFFLINE);
 
-        // Creates a list with the first and the second user
+        // Creates an  Arraylist with the first and the second user
         List<User> allUsers = Arrays.asList(firstuser,seconduser);
 
         // this mocks the UserService -> we define above what the userService should return when getUsers() is called
@@ -111,7 +116,9 @@ public class UserControllerTest {
 
     }
 
-    // This tests the post Request, when adding a new user @PostMapping("/users")
+    /* This tests the post Request, when adding a new user
+    *  @PostMapping("/users")
+    */
     @Test
     public void createUser_validInput_userCreated() throws Exception {
         // given
@@ -123,13 +130,13 @@ public class UserControllerTest {
         user.setPassword("123");
         user.setStatus(UserStatus.OFFLINE);
 
-        // We test the creation of a User here
+        // We create a UserPostDTO
         UserPostDTO userPostDTO = new UserPostDTO();
         userPostDTO.setName("Test User");
         userPostDTO.setUsername("testUsername");
         userPostDTO.setPassword("123");
 
-        // Arrange
+        // Arrange -> Whatever user we enter we will receive user
         given(userService.createUser(Mockito.any())).willReturn(user);
 
         // when/then -> do the request + validate the result
@@ -146,7 +153,9 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
-    /// Checks, if the login-functionality is working properly (Put Request)     @PutMapping("/login")
+    /* Checks, if the login-functionality is working properly (Put Request)
+     * @PutMapping("/login")
+     */
     @Test
     public void loginUser_valid() throws Exception {
         // given
@@ -177,7 +186,9 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
 
-    // This one checks if the logout is valid: @PutMapping("/logout")
+    /* This one checks if the logout is valid:
+     * @PutMapping("/logout")
+     */
     @Test
     public void logoutUser_valid() throws Exception {
         // given
@@ -208,7 +219,9 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
     }
 
-    // This test refers to the @PutMapping("/users/{userId}")
+    /* This test refers to the @PutMapping
+     * @PutMapping("/users/{userId}")
+     */
 
         @Test
     public void updateUser_valid() throws Exception {
@@ -233,7 +246,7 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userPutDTO));
 
-        // then
+        // then -> Returns NO_CONTENT SO CHECK STATUS
         mockMvc.perform(putRequest)
                 .andExpect(status().isNoContent());
 
@@ -266,7 +279,6 @@ public class UserControllerTest {
 
 
     }
-
 
     /**
      * Helper Method to convert userPostDTO into a JSON string such that the input can be processed

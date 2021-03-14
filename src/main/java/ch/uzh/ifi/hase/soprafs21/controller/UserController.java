@@ -27,7 +27,8 @@ public class UserController {
         this.userService = userService;
     }
     /**
-     * This function get's a list of all users in the database
+     * This function get's a list of all users
+     * GET REQUEST to (/users)
      */
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
@@ -45,8 +46,8 @@ public class UserController {
     }
 
     /**
-     * This function creates a user and checks before, if the user is allready present in the database,
-     * if yes an Exception is thrown.
+     * This function creates a user and checks before, if the user is already present in the database,
+     * POST REQUEST to (/users) Status Code 201 -> Created. If failed Status Code = 409 -> CONFLICT
      */
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
@@ -55,7 +56,7 @@ public class UserController {
         // Checks if username & password given are not empty
         if(userPostDTO.getUsername() == null || userPostDTO.getPassword()==null){
             String baseErrorMessage = "You need to provide a username and password";
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,String.format(baseErrorMessage));
+            throw new ResponseStatusException(HttpStatus.CONFLICT,String.format(baseErrorMessage));
         }
         // convert API user to internal representation
         User userInput = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
@@ -69,6 +70,7 @@ public class UserController {
 
     /**
      * This function retrieves a single User based on his ID
+     * GET REQUEST Status Code OK 200. IF fail Status Code -> 404 -> Not Found
      */
     @GetMapping("/users/{userId}")
     @ResponseStatus(HttpStatus.OK)
@@ -84,6 +86,7 @@ public class UserController {
     /**
      * This function is for updating the User -> PutMapping.
      * It will update the users birthday and username
+     * PUT REQUEST Status Code 204 -> NO_CONTENT, Error: Status Code = 404 -> NOT FOUND
      */
     @PutMapping("/users/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -95,8 +98,8 @@ public class UserController {
     }
     /**
      * This function is specifically made for /login
-     * This will specifically return true (in String) format if logged in correctly
-     * Otherwise it will return false!
+     * It will return a GETDTO
+     * PUT MAPPING: Http.status code  = 200 OK. Error => HTTP Status Code: NOT_Found
      */
     @PutMapping("/login")
     @ResponseStatus(HttpStatus.OK)
@@ -110,6 +113,7 @@ public class UserController {
     /**
      * This function is made for logging the User out
      * It sets the User.Status = Offline, when the user logs out
+     * PUT MAPPING: HTTP.Status code = 200 OK
      */
     @PutMapping("/logout")
     @ResponseStatus(HttpStatus.OK)
