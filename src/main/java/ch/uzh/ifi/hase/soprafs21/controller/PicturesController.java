@@ -23,19 +23,7 @@ public class PicturesController {
     private FileStorageService fileStorageService;
 
     @PostMapping("/upload")
-    public ResponseEntity<ResponseMessage> uploadFile(@RequestParam("file") MultipartFile file) {
-        System.out.println(file);
-        String message = "";
-        try {
-            System.out.println("Hello");
-            fileStorageService.store(file);
-            message = "Uploaded the file successfully: " + file.getOriginalFilename();
-            return ResponseEntity.status(HttpStatus.OK).body(new ResponseMessage(message));
-        } catch (Exception e) {
-            message = "Could not upload the file: " + file.getOriginalFilename() + "!";
-            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(new ResponseMessage(message));
-        }
-    }
+
 
 
 }
