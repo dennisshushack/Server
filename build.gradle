@@ -38,9 +38,14 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
+    implementation group: 'org.apache.tomcat', name: 'tomcat-jdbc', version: '7.0.19'
+
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    developmentOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
+
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -89,6 +94,10 @@ if (secretPropsFile.exists()) {
 
 sonarqube {
     properties {
+        //property "sonar.projectKey", "sopra-fs21-group-12_serverGroup12"
+        //property "sonar.organization", "sopra-fs21-group-12"
+        //property "sonar.host.url", "https://sonarcloud.io"
+
         property "sonar.projectKey", project.sonarProjectKey
         property "sonar.organization", project.sonarOrganization
         property "sonar.host.url", "https://sonarcloud.io"
@@ -103,3 +112,5 @@ project.tasks["sonarqube"].dependsOn {
 }
 
 defaultTasks 'bootJar', 'build'
+
+
