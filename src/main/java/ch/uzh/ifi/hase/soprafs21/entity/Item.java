@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs21.entity;
 
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -14,3 +13,4 @@ public class Item {
     @Id
     private long id;
 }
+
