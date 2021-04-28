@@ -5,6 +5,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.transaction.Transactional;
 
+// Need to add a comment right here
 @Entity
 @Transactional
 public class Item {
