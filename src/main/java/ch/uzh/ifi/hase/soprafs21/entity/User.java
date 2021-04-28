@@ -16,6 +16,7 @@ import org.hibernate.annotations.CreationTimestamp;
  * - unique = true -> this value must be unqiue across the database
  * -> composes the primary key
  * Hello World
+ * Najajjdjdjdjd
  */
 @Entity
 @Table(name = "AppUser")
